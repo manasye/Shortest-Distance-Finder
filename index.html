@@ -5,7 +5,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
     <style>
         body {
-            /* overflow: hidden; */
+            overflow: hidden;   
             color: #fff;
         }
 
@@ -88,7 +88,7 @@
 
         function placeInput(){
             var lines = document.getElementById('input-column').value.split('\n');
-            
+
             for (var i = 0; i < lines.length; i++) {
                 lines[i] = lines[i].split(',');
                 var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
