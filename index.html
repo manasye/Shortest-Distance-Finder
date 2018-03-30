@@ -68,26 +68,14 @@
                 center: new google.maps.LatLng(-6.893137, 107.610442)
             });
                                
-            // var submitBtn = document.getElementById('btn');
-            // var lines;
-            
-            // submitBtn.onclick = function () {
-            //      lines = document.getElementById('input-column').value.split('\n');
-            // };
-            
-            // for (var i = 0; i < lines.length; i++) {
-            //     console.log(lines[i][0]);
-            //     console.log(lines[i][1]);
-            //     lines[i] = lines[i].split(',');
-            //     var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
-            //     var marker = new google.maps.Marker({
-            //         position: coordinate,
-            //         map: map
-            //     });
-            // }
+            var submitBtn = document.getElementById('btn');
 
             map.addListener('click', function (e) {
                 placeMarker(e.latLng, map);
+            });
+
+            submitBtn.addEventListener('click', function(e) {
+                placeInput();
             });
         }    
 
@@ -97,6 +85,18 @@
                 map: map
             });
         } 
+
+        function placeInput(){
+            var lines = document.getElementById('input-column').value.split('\n');
+            
+            for (var i = 0; i < lines.length; i++) {
+                lines[i] = lines[i].split(',');
+                var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
+                placeMarker(coordinate, map);
+            }
+
+        }
+
   
     </script>
     <script async defer
