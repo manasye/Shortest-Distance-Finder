@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tugas Kecil Strategi Algoritma</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+    <style>
+        body {
+            /* overflow: hidden; */
+            color: #fff;
+        }
+
+        .container {            
+            font-family: "Lato";
+            width: 100%;
+            height: 100vh;
+            margin: auto;
+            padding: 10px;
+        }
+
+        #map {
+            width: 70%;
+            height: 100vh;
+            float: left;
+        }
+
+        #nav {
+            background-color: #002C5C;
+            background-size: cover;
+            padding-top: 10vh;
+            height: 100vh;
+            text-align: center;
+        }
+
+        #input-column {
+            font-family:"Times New Roman", Times, serif;  
+            font-size: 14px; 
+        }
+
+        #btn:link, #btn:visited {
+            margin-top: 120px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 10px 40px;
+            display: inline-block;
+            border-radius: 15px;
+            background-color: #fff;
+            color: #000;
+        }
+
+      </style>
+    </head>
+  <body>
+    <div class="container">
+        <div id="map"></div>
+        <div id="nav">
+            <h3>Input your coordinate here:</h3>
+            <textarea name="input-column" id="input-column" cols="40" rows="15"></textarea>
+            <a href="#" id="btn">Submit</a>
+        </div>
+    </div>
+    
+    <script>
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 18,
+                center: new google.maps.LatLng(-6.893137, 107.610442)
+            });
+                               
+            // var submitBtn = document.getElementById('btn');
+            // var lines;
+            
+            // submitBtn.onclick = function () {
+            //      lines = document.getElementById('input-column').value.split('\n');
+            // };
+            
+            // for (var i = 0; i < lines.length; i++) {
+            //     console.log(lines[i][0]);
+            //     console.log(lines[i][1]);
+            //     lines[i] = lines[i].split(',');
+            //     var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
+            //     var marker = new google.maps.Marker({
+            //         position: coordinate,
+            //         map: map
+            //     });
+            // }
+
+            map.addListener('click', function (e) {
+                placeMarker(e.latLng, map);
+            });
+        }    
+
+        function placeMarker(position, map) {
+            var marker = new google.maps.Marker({
+                position: position,
+                map: map
+            });
+        } 
+  
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
+    </script>
+  </body>
+</html>
