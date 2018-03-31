@@ -6,7 +6,7 @@
     <!-- Add styling -->
     <style>
         body {
-            overflow: hidden;
+            /* overflow: hidden; */
             color: #fff;
         }
 
@@ -27,7 +27,7 @@
         #nav {
             background-color: #002C5C;
             background-size: cover;
-            padding-top: 4vh;
+            padding-top: 1vh;
             height: 100vh;
             text-align: center;
         }
@@ -38,7 +38,8 @@
         }
 
         #btn:link, #btn:visited {
-            margin-top: 50px;
+            margin-top: 40px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             text-decoration: none;
             padding: 10px 40px;
@@ -53,9 +54,9 @@
             height: 17px;
         }
 
-        h5 {
-            margin-top: 10px;
-            margin-bottom: 10px;
+        p {
+            margin-top: 7px;
+            margin-bottom: 7px;
         }
 
       </style>
@@ -68,11 +69,12 @@
         <div id="nav">
             <h3>Input your coordinate here:</h3>
             <!-- Text area where all coordinate's input stored -->
-            <textarea name="input-column" id="input-column" cols="40" rows="13"></textarea>
+            <textarea name="input-column" id="input-column" cols="40" rows="10"></textarea>
             <h4>Input starting and finishing point here</h4>
+            <!-- Text area for inputing starting and ending vertex -->
             <div class="input-vertex">
                 <textarea name="input-start" id="input-start" cols="7" rows="1"></textarea>
-                <h5>to</h5>
+                <p>to</p>
                 <textarea name="input-end" id="input-end" cols="7" rows="1"></textarea>
             </div>
             <!-- Button for submitting -->
@@ -82,44 +84,117 @@
 
     <script>
         var map;
+        var markers = [];
         
         // Initialize map
         function initMap() {
+            // set first place to be seen in map
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 18,
                 center: new google.maps.LatLng(-6.893137, 107.610442)
             });
-
+            
+            // get submit button element
             var submitBtn = document.getElementById('btn');
 
+            // add event listener when map clicked and place marker on it
             map.addListener('click', function (e) {
                 placeMarker(e.latLng, map);
             });
-
+            
+            // place input's coordinate parsed from text area
             submitBtn.addEventListener('click', function(e) {
                 placeInput();
+                // setMapPathOnAll(map);
+                findMinPath();
             });
+         
         }
 
         // Function to place marker at current position
         function placeMarker(position, map) {
             var marker = new google.maps.Marker({
                 position: position,
-                map: map
+                map: map,
+                label: {
+                    text : (markers.length + 1).toString(),
+                    color : 'white'
+                }
             });
+
+            // Add path to each vertex
+            if(markers.length > 0) {
+                mark1 = { lat: marker.position.lat(), lng: marker.position.lng() };
+                mark2 = { lat: markers[markers.length-1].position.lat(), lng: markers[markers.length-1].position.lng() };
+                addPath(mark1, mark2);
+            }
+
+            // Close the graph
+            if(markers.length > 0) {
+                markers[0].addListener('click', function(){
+                    mark1 = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
+                    mark2 = { lat: markers[markers.length-1].position.lat(), lng: markers[markers.length-1].position.lng() };
+                    addPath(mark1, mark2)
+                });
+            }
+
+            markers.push(marker);
         }
 
         // Function that parsed through textarea value and place marker
         function placeInput(){
+            // Split coordinate line by line
             var lines = document.getElementById('input-column').value.split('\n');
+            // download(lines, 'test.txt', 'text/plain');
 
             for (var i = 0; i < lines.length; i++) {
                 lines[i] = lines[i].split(',');
-                var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
-                placeMarker(coordinate, map);
+                linObj = ({ num: i, absis: lines[i][0], ordinat: lines[i][1] });
+                var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat); 
+                placeMarker(coordinate, map);                                
             }
+
         }
 
+        // Function that do A* algorithm
+        function findMinPath(){
+            var startingNodes = document.getElementById('input-start').value;
+            var endNodes = document.getElementById('input-end').value;
+
+            // Result for Algorithm for A* will be here
+
+            
+            // Make a new result heading html content
+            var heading = document.createElement('h3');
+            var node = document.createTextNode('Result');
+            heading.appendChild(node);
+
+            // Make a new answers html content 
+            var path = document.createElement('p'); 
+            var node = document.createTextNode(startingNodes + " to " + endNodes); 
+            path.appendChild(node);
+
+            // Append to navigation placeholder
+            var element = document.getElementById('nav'); 
+            element.appendChild(heading);
+            element.appendChild(path);
+        }
+
+        function addPath(obj1, obj2) {
+            var flightPlanCoordinates = [
+                {lat: obj1.lat, lng: obj1.lng},
+                {lat: obj2.lat, lng: obj2.lng},
+            ];
+            var flightPath = new google.maps.Polyline({
+                path: flightPlanCoordinates,
+                geodesic: true,
+                strokeColor: '#000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            flightPath.setMap(map);
+        }
+        
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
