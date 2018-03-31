@@ -134,7 +134,8 @@
                 markers[0].addListener('click', function(){
                     mark1 = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
                     mark2 = { lat: markers[markers.length-1].position.lat(), lng: markers[markers.length-1].position.lng() };
-                    addPath(mark1, mark2)
+                    addPath(mark1, mark2);
+                    return;
                 });
             }
 
