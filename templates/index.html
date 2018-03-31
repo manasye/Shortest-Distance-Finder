@@ -3,6 +3,7 @@
   <head>
     <title>Tugas Kecil Strategi Algoritma</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+    <!-- Add styling -->
     <style>
         body {
             overflow: hidden;
@@ -26,7 +27,7 @@
         #nav {
             background-color: #002C5C;
             background-size: cover;
-            padding-top: 10vh;
+            padding-top: 4vh;
             height: 100vh;
             text-align: center;
         }
@@ -37,7 +38,7 @@
         }
 
         #btn:link, #btn:visited {
-            margin-top: 120px;
+            margin-top: 50px;
             text-transform: uppercase;
             text-decoration: none;
             padding: 10px 40px;
@@ -47,21 +48,42 @@
             color: #000;
         }
 
+        #input-start, #input-end {
+            width: 63px; 
+            height: 17px;
+        }
+
+        h5 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
       </style>
     </head>
   <body>
     <div class="container">
+        <!-- Map placeholder -->
         <div id="map"></div>
+        <!-- Navigation placeholder -->
         <div id="nav">
             <h3>Input your coordinate here:</h3>
-            <textarea name="input-column" id="input-column" cols="40" rows="15"></textarea>
+            <!-- Text area where all coordinate's input stored -->
+            <textarea name="input-column" id="input-column" cols="40" rows="13"></textarea>
+            <h4>Input starting and finishing point here</h4>
+            <div class="input-vertex">
+                <textarea name="input-start" id="input-start" cols="7" rows="1"></textarea>
+                <h5>to</h5>
+                <textarea name="input-end" id="input-end" cols="7" rows="1"></textarea>
+            </div>
+            <!-- Button for submitting -->
             <a href="#" id="btn">Submit</a>
         </div>
     </div>
 
     <script>
         var map;
-
+        
+        // Initialize map
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 18,
@@ -79,6 +101,7 @@
             });
         }
 
+        // Function to place marker at current position
         function placeMarker(position, map) {
             var marker = new google.maps.Marker({
                 position: position,
@@ -86,6 +109,7 @@
             });
         }
 
+        // Function that parsed through textarea value and place marker
         function placeInput(){
             var lines = document.getElementById('input-column').value.split('\n');
 
@@ -94,9 +118,7 @@
                 var coordinate = new google.maps.LatLng(lines[i][0], lines[i][1]);
                 placeMarker(coordinate, map);
             }
-
         }
-
 
     </script>
     <script async defer
