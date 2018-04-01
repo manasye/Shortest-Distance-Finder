@@ -68,9 +68,10 @@
         <!-- Navigation placeholder -->
         <div id="nav">
             <h3>Input your coordinate here:</h3>
+            <h4>Or simply by clicking on the map</h4>
             <!-- Text area where all coordinate's input stored -->
             <textarea name="input-column" id="input-column" cols="40" rows="10"></textarea>
-            <h4>Input starting and finishing point here</h4>
+            <h4>Input starting and finishing index here</h4>
             <!-- Text area for inputing starting and ending vertex -->
             <div class="input-vertex">
                 <textarea name="input-start" id="input-start" cols="7" rows="1"></textarea>
@@ -84,7 +85,9 @@
 
     <script>
         var map;
-        var markers = [], nodes = [];
+        var prevMarker = null, currMarker = null;
+        var markers = [], nodes = [], edges = [];
+        var adjMatrix = [];
         
         // Initialize map
         function initMap() {
@@ -107,10 +110,14 @@
                 placeInput();
                 // Delete last element which is a dummy element
                 nodes.splice(-1, 1);
+                edges.splice(-1, 1);
                 
                 // Still unable to implement save file here
 
                 console.log(nodes);
+                console.log(edges);
+                createAdjMatrix(nodes, edges);
+                console.log(adjMatrix);
                 findMinPath();
             });
          
@@ -118,6 +125,7 @@
 
         // Function to place marker at current position
         function placeMarker(position, map) {
+
             var marker = new google.maps.Marker({
                 position: position,
                 map: map,
@@ -125,30 +133,39 @@
                     text : (markers.length + 1).toString(),
                     color : 'white'
                 }
-            });
+            }); 
 
+            marker.addListener('click', function(){
+                isAlreadyExist = true;
+                mark1 = { lat: this.position.lat(), lng: this.position.lng() };
+                mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
+                addPath(mark1, mark2);
+                addEdge(currMarker, this);
+                prevMarker = currMarker;
+                currMarker = this; 
+            });     
+
+            // Keep the previous and current marker
+            prevMarker = currMarker;        
+            currMarker = marker;
+
+            // First node
             if(markers.length === 1) {
-                 mark = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
-                 nodes.push(mark);
+                mark = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
+                nodes.push(mark);
             }
+            
+            markers.push(marker);
 
             // Add path to each vertex
             if(markers.length > 0) {
-                mark1 = { lat: marker.position.lat(), lng: marker.position.lng() };
+                mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };
                 nodes.push(mark1);
-                mark2 = { lat: markers[markers.length-1].position.lat(), lng: markers[markers.length-1].position.lng() };
+                mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
                 addPath(mark1, mark2);
-
-                // Close the graph
-                markers[0].addListener('click', function(){
-                    mark1 = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
-                    mark2 = { lat: markers[markers.length-1].position.lat(), lng: markers[markers.length-1].position.lng() };
-                    addPath(mark1, mark2);
-                    return;
-                });
+                addEdge(prevMarker, currMarker);
             }
 
-            markers.push(marker);
         }
 
         // Function that parsed through textarea value and place marker
@@ -205,10 +222,80 @@
             });
             flightPath.setMap(map);
         }
+
+        // Function search at what index is marker in list of marker
+        function checkMarker(marker) {
+            for (var i = 0; i < markers.length; i++) {
+                if(markers[i] === marker) {
+                    idx = i;
+                    return idx;
+                }
+            }
+        }
+
+        // Function that add edge to list of edge
+        function addEdge(obj1, obj2) {
+            var pos1 = obj1.getPosition(), pos2 = obj2.getPosition();
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(pos1, pos2);
+            edge = {
+                start : checkMarker(obj1) + 1,
+                end : checkMarker(obj2) + 1,
+                dist : distance
+            };
+            edges.push(edge);
+        }
+
+        // Function that checked whether certain node exist in list of edge
+        function isExist(i, j) {
+            var checked = false;
+            for(var k = 0; k < edges.length; k++) {
+                if((edges[k].start === i + 1) && (edges[k].end === j + 1)) {
+                    checked =  true;
+                }
+            }
+            return checked;
+        }  
+
+        // Function that seek distance from certain node
+        function calcDistance(i, j) {
+            for(var k = 0; k < edges.length; k++) {
+                if((edges[k].start === i + 1) && (edges[k].end === j + 1)) {
+                    return edges[k].dist;
+                }
+            }
+        }    
+
+        // Function that create adjacency matrix from edges and nodes
+        function createAdjMatrix(edges, nodes) {
+            for(var i = 0; i < nodes.length; i++ ) {
+                temp = [];
+                for(var j = 0; j < nodes.length; j++ ) {
+                    // Same node, add dummy element
+                    if (i === j) {
+                        temp.push(-1);
+                    } 
+                    // Check whether it exist in edge list
+                    else if (isExist(i, j)) {
+                        temp.push(calcDistance(i, j));
+                    }
+                    else if (isExist(j, i)) {
+                        temp.push(calcDistance(j, i));
+                    }
+                    // If not exist ,add dummy element
+                    else {
+                        temp.push(-1);
+                    }
+                }
+                // console.log(temp);
+                adjMatrix.push(temp);
+            }
+        }
         
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&libraries=geometry">
+</script>
   </body>
 </html>
