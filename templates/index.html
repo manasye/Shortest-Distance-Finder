@@ -3,6 +3,8 @@
   <head>
     <title>Tugas Kecil Strategi Algoritma</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Add styling -->
     <style>
         body {
@@ -50,7 +52,7 @@
         }
 
         #input-start, #input-end {
-            width: 63px; 
+            width: 63px;
             height: 17px;
         }
 
@@ -78,14 +80,14 @@
                 <textarea name="input-end" id="input-end" cols="7" rows="1"></textarea>
             </div>
             <!-- Button for submitting -->
-            <a href="#" id="btn">Submit</a>
+            <a href="javascript:sendInput();" id="btn">Submit</a>
         </div>
     </div>
 
     <script>
         var map;
         var markers = [], nodes = [];
-        
+
         // Initialize map
         function initMap() {
             // set first place to be seen in map
@@ -93,7 +95,7 @@
                 zoom: 18,
                 center: new google.maps.LatLng(-6.893137, 107.610442)
             });
-            
+
             // get submit button element
             var submitBtn = document.getElementById('btn');
 
@@ -101,19 +103,19 @@
             map.addListener('click', function (e) {
                 placeMarker(e.latLng, map);
             });
-            
+
             // place input's coordinate parsed from text area
             submitBtn.addEventListener('click', function(e) {
                 placeInput();
                 // Delete last element which is a dummy element
                 nodes.splice(-1, 1);
-                
+
                 // Still unable to implement save file here
 
                 console.log(nodes);
                 findMinPath();
             });
-         
+
         }
 
         // Function to place marker at current position
@@ -160,8 +162,8 @@
             for (var i = 0; i < lines.length; i++) {
                 lines[i] = lines[i].split(',');
                 linObj = ({ num: i, absis: lines[i][0], ordinat: lines[i][1] });
-                var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat); 
-                placeMarker(coordinate, map);                                
+                var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat);
+                placeMarker(coordinate, map);
             }
 
         }
@@ -173,19 +175,19 @@
 
             // Result for Algorithm for A* will be here
 
-            
+
             // Make a new result heading html content
             var heading = document.createElement('h3');
             var node = document.createTextNode('Result');
             heading.appendChild(node);
 
-            // Make a new answers html content 
-            var path = document.createElement('p'); 
-            var node = document.createTextNode(startingNodes + " to " + endNodes); 
+            // Make a new answers html content
+            var path = document.createElement('p');
+            var node = document.createTextNode(startingNodes + " to " + endNodes);
             path.appendChild(node);
 
             // Append to navigation placeholder
-            var element = document.getElementById('nav'); 
+            var element = document.getElementById('nav');
             element.appendChild(heading);
             element.appendChild(path);
         }
@@ -205,7 +207,17 @@
             });
             flightPath.setMap(map);
         }
-        
+
+        // Function to send input to browser (ONLY FOR TESTING)
+        function sendInput() {
+          $.ajax({
+            method : "POST",
+            url : "./ProcInput"
+            //data : {test : "YA TEST AJA"}
+          }).done(function(msg) {
+            $("#input-column").append(msg);
+          });
+        }
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
