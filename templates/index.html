@@ -114,12 +114,8 @@
                 nodes.splice(-1, 1);
                 edges.splice(-1, 1);
 
-                console.log(nodes);
                 cleanDuplicate();
-                console.log(nodesEff);
-                console.log(edges);
                 createAdjMatrix();
-                console.log(adjMatrix);
                 findMinPath();
             });
 
@@ -137,7 +133,7 @@
                     color : 'white'
                 }
             });
-
+            
             marker.addListener('click', function(){
                 isAlreadyExist = true;
                 mark1 = { lat: this.position.lat(), lng: this.position.lng() };
@@ -220,17 +216,16 @@
                 // Distance of this path
                 var path_distance = result["path"][1];
                 
-                // Add path marker in map
+                // Add path result in map
                 addPathResult(path);
 
                 // Make a new result heading html content
                 var heading = document.createElement('h3');
-                var node = document.createTextNode('Result');
+                var node = document.createTextNode('Result : ');
                 heading.appendChild(node);
                 
                 // Convert array of path to string
                 pathString = pathToString(path);
-                console.log(pathString);
                 // Make a new answers html content
                 var pathP = document.createElement('p');
                 var distP = document.createElement('p');
@@ -252,8 +247,10 @@
         // Function that add path marker to map
         function addPathResult(path) {
             for (var i = path.length - 1; i > 0; i-- ) {
-                marker1 = { lat: markers[i].position.lat(), lng: markers[i].position.lng() };
-                marker2 = { lat: markers[i-1].position.lat(), lng: markers[i-1].position.lng() };
+                console.log(path[i]);
+                console.log(path[i-1]);
+                marker1 = { lat: markers[path[i]-1].position.lat(), lng: markers[path[i]-1].position.lng() };
+                marker2 = { lat: markers[path[i-1]-1].position.lat(), lng: markers[path[i-1]-1].position.lng() };
                 addPath(marker1, marker2, '#FF9800');
             }
         }
