@@ -115,8 +115,6 @@
                 nodes.splice(-1, 1);
                 edges.splice(-1, 1);
 
-                // Still unable to implement save file here
-
                 console.log(nodes);
                 cleanDuplicate();
                 console.log(nodesEff);
@@ -174,14 +172,12 @@
                     addEdge(prevMarker, currMarker);
                 }
             }
-
         }
 
         // Function that parsed through textarea value and place marker
         function placeInput(){
             // Split coordinate line by line
             var lines = document.getElementById('input-column').value.split('\n');
-            // download(lines, 'test.txt', 'text/plain');
 
             for (var i = 0; i < lines.length; i++) {
                 lines[i] = lines[i].split(',');
