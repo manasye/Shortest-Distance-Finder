@@ -8,7 +8,6 @@
     <!-- Add styling -->
     <style>
         body {
-            /* overflow: hidden; */
             color: #fff;
         }
 
@@ -29,7 +28,7 @@
         #nav {
             background-color: #002C5C;
             background-size: cover;
-            padding-top: 1vh;
+            padding-top: 0.5vh;
             height: 100vh;
             text-align: center;
         }
@@ -41,7 +40,7 @@
 
         #btn:link, #btn:visited {
             margin-top: 40px;
-            margin-bottom: 10px;
+            margin-bottom: 7px;
             text-transform: uppercase;
             text-decoration: none;
             padding: 10px 40px;
@@ -57,8 +56,8 @@
         }
 
         p {
-            margin-top: 7px;
-            margin-bottom: 7px;
+            margin-top: 3.5px;
+            margin-bottom: 3.5px;
         }
 
       </style>
@@ -70,7 +69,7 @@
         <!-- Navigation placeholder -->
         <div id="nav">
             <h3>Input your coordinate here:</h3>
-            <h4>Or simply by clicking on the map</h4>
+            <h4>( Or simply by clicking on the map )</h4>
             <!-- Text area where all coordinate's input stored -->
             <textarea name="input-column" id="input-column" cols="40" rows="10"></textarea>
             <h4>Input starting and finishing index here</h4>
@@ -143,7 +142,7 @@
                 isAlreadyExist = true;
                 mark1 = { lat: this.position.lat(), lng: this.position.lng() };
                 mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
-                addPath(mark1, mark2);
+                addPath(mark1, mark2, '#000');
                 addEdge(currMarker, this);
                 nodes.push(mark2);
                 prevMarker = currMarker;
@@ -168,7 +167,7 @@
                     mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };
                     mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
                     nodes.push(mark2);
-                    addPath(mark1, mark2);
+                    addPath(mark1, mark2, '#000');
                     addEdge(prevMarker, currMarker);
                 }
             }
@@ -217,49 +216,77 @@
               }
               else {
                 // Stores the path from start to end
-                // BEWARE that the path is INVERTED (from end to start)
                 var path = result["path"][0];
                 // Distance of this path
                 var path_distance = result["path"][1];
+                
+                // Add path marker in map
+                addPathResult(path);
 
-                // Process result here
-                // Delete this one below, it is only used for testing
-                document.getElementById('input-column').value = path + "\n";
-                document.getElementById('input-column').value += "Distance : " + path_distance;
-
-                /*
                 // Make a new result heading html content
                 var heading = document.createElement('h3');
                 var node = document.createTextNode('Result');
                 heading.appendChild(node);
-
+                
+                // Convert array of path to string
+                pathString = pathToString(path);
+                console.log(pathString);
                 // Make a new answers html content
-                var path = document.createElement('p');
-                var node = document.createTextNode(startingNode + " to " + endNode);
-                path.appendChild(node);
+                var pathP = document.createElement('p');
+                var distP = document.createElement('p');
+                var path = document.createTextNode("The path is " + pathString);
+                var dist = document.createTextNode("Distance : " + path_distance)
+                pathP.appendChild(path);
+                distP.appendChild(dist);
 
                 // Append to navigation placeholder
+                var br = document.createElement('br');
                 var element = document.getElementById('nav');
                 element.appendChild(heading);
-                element.appendChild(path);
-                */
+                element.appendChild(pathP);
+                element.appendChild(distP);
               }
             });
         }
 
+        // Function that add path marker to map
+        function addPathResult(path) {
+            for (var i = path.length - 1; i > 0; i-- ) {
+                marker1 = { lat: markers[i].position.lat(), lng: markers[i].position.lng() };
+                marker2 = { lat: markers[i-1].position.lat(), lng: markers[i-1].position.lng() };
+                addPath(marker1, marker2, '#FF9800');
+            }
+        }
+
+        // Function that change array of path to array
+        function pathToString(path) {
+            result = "";
+            for (var i = path.length - 1; i >= 0; i-- ) {
+                if (i == path.length - 1) {
+                    result += path[i];
+                } else {
+                    result += " -> " + path[i];
+                }
+            }
+            return result;
+        }
+
         // Function that add path to two markers
-        function addPath(obj1, obj2) {
+        function addPath(obj1, obj2, color) {
+            // Set coordinates to add path
             var flightPlanCoordinates = [
                 {lat: obj1.lat, lng: obj1.lng},
                 {lat: obj2.lat, lng: obj2.lng},
             ];
+            // Create path
             var flightPath = new google.maps.Polyline({
                 path: flightPlanCoordinates,
                 geodesic: true,
-                strokeColor: '#000',
+                strokeColor: color,
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
+            // Set path on the map
             flightPath.setMap(map);
         }
 
@@ -345,6 +372,7 @@
                 }
             }
         }
+
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
