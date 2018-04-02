@@ -152,7 +152,7 @@
 
             if(!isAlreadyExist) {
                 // Keep the previous and current marker
-                prevMarker = currMarker;        
+                prevMarker = currMarker;
                 currMarker = marker;
 
                 // First node
@@ -160,12 +160,12 @@
                     mark = { lat : currMarker.position.lat(), lng : currMarker.position.lng() };
                     nodes.push(mark);
                 }
-                
+
                 markers.push(marker);
 
                 // Add path to each vertex
                 if(markers.length > 1) {
-                    mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };   
+                    mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };
                     mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
                     nodes.push(mark2);
                     addPath(mark1, mark2);
@@ -194,7 +194,7 @@
             endNode = document.getElementById('input-end').value;
             // Formatting input
             var inputData = {}
-            inputData.node_list = nodes;
+            inputData.node_list = nodesEff;
             inputData.matrix = adjMatrix;
             inputData.start = startingNode;
             inputData.end = endNode;
@@ -204,14 +204,30 @@
               method : "POST",
               url : "./ProcInput",
               data : {input : inputData}
-            }).done(function(path) {
-              result = JSON.parse(path)
+            }).done(function(response) {
+              result = JSON.parse(response)
               if (result["status"] == -999) {
-                alert("Server missing some sent data...")
+                alert("Server missing some sent data...");
+              }
+              else if (result[status] == 1) {
+                alert("Start or finishing index cannot be empty!");
+              }
+              else if ((result[status] == 2) || (result[status] == 3)) {
+                alert("Start or finishing index is out of bounds!");
               }
               else {
-                // Process path here
+                // Stores the path from start to end
+                // BEWARE that the path is INVERTED (from end to start)
+                var path = result["path"][0];
+                // Distance of this path
+                var path_distance = result["path"][1];
 
+                // Process result here
+                // Delete this one below, it is only used for testing
+                document.getElementById('input-column').value = path + "\n";
+                document.getElementById('input-column').value += "Distance : " + path_distance;
+
+                /*
                 // Make a new result heading html content
                 var heading = document.createElement('h3');
                 var node = document.createTextNode('Result');
@@ -226,6 +242,7 @@
                 var element = document.getElementById('nav');
                 element.appendChild(heading);
                 element.appendChild(path);
+                */
               }
             });
         }
