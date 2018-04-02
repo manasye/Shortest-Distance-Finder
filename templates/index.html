@@ -89,7 +89,7 @@
         var map;
         var prevMarker = null, currMarker = null;
         var markers = [], nodes = [], edges = [];
-        var adjMatrix = [];
+        var adjMatrix = [], nodesEff = [];
 
         // Initialize map
         function initMap() {
@@ -118,9 +118,10 @@
                 // Still unable to implement save file here
 
                 console.log(nodes);
-                // console.log(markers);
+                cleanDuplicate();
+                console.log(nodesEff);
                 console.log(edges);
-                createAdjMatrix(nodes, edges);
+                createAdjMatrix();
                 console.log(adjMatrix);
                 findMinPath();
             });
@@ -292,10 +293,10 @@
         }
 
         // Function that create adjacency matrix from edges and nodes
-        function createAdjMatrix(edges, nodes) {
-            for(var i = 0; i < nodes.length; i++ ) {
+        function createAdjMatrix() {
+            for(var i = 0; i < nodesEff.length; i++ ) {
                 temp = [];
-                for(var j = 0; j < nodes.length; j++ ) {
+                for(var j = 0; j < nodesEff.length; j++ ) {
                     // Same node, add dummy element
                     if (i === j) {
                         temp.push(-1);
@@ -314,6 +315,21 @@
                 }
                 // console.log(temp);
                 adjMatrix.push(temp);
+            }
+        }
+
+        // Clean duplicate nodes
+        function cleanDuplicate() {
+            for(var i = 0; i < nodes.length; i++) {
+                var isDuplicate = false;
+                for(var j = i + 1; j < nodes.length; j++) {
+                    if ((nodes[j].lng === nodes[i].lng) &&  (nodes[j].lat === nodes[i].lat)){
+                        isDuplicate = true;
+                    }
+                }
+                if(!isDuplicate) {
+                    nodesEff.push(nodes[i]);
+                }
             }
         }
     </script>
