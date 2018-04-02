@@ -112,11 +112,13 @@
                 placeInput();
                 // Delete last element which is a dummy element
                 nodes.splice(-1, 1);
+                nodes.splice(-1, 1);
                 edges.splice(-1, 1);
                 
                 // Still unable to implement save file here
 
                 console.log(nodes);
+                // console.log(markers);
                 console.log(edges);
                 createAdjMatrix(nodes, edges);
                 console.log(adjMatrix);
@@ -128,6 +130,7 @@
         // Function to place marker at current position
         function placeMarker(position, map) {
 
+            var isAlreadyExist = false;
             var marker = new google.maps.Marker({
                 position: position,
                 map: map,
@@ -143,29 +146,32 @@
                 mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
                 addPath(mark1, mark2);
                 addEdge(currMarker, this);
+                nodes.push(mark2);
                 prevMarker = currMarker;
                 currMarker = this; 
             });     
 
-            // Keep the previous and current marker
-            prevMarker = currMarker;        
-            currMarker = marker;
+            if(!isAlreadyExist) {
+                // Keep the previous and current marker
+                prevMarker = currMarker;        
+                currMarker = marker;
 
-            // First node
-            if(markers.length === 1) {
-                mark = { lat: markers[0].position.lat(), lng: markers[0].position.lng() };
-                nodes.push(mark);
-            }
-            
-            markers.push(marker);
+                // First node
+                if(markers.length === 0) {
+                    mark = { lat : currMarker.position.lat(), lng : currMarker.position.lng() };
+                    nodes.push(mark);
+                }
+                
+                markers.push(marker);
 
-            // Add path to each vertex
-            if(markers.length > 0) {
-                mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };
-                nodes.push(mark1);
-                mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
-                addPath(mark1, mark2);
-                addEdge(prevMarker, currMarker);
+                // Add path to each vertex
+                if(markers.length > 1) {
+                    mark1 = { lat: prevMarker.position.lat(), lng: prevMarker.position.lng() };   
+                    mark2 = { lat: currMarker.position.lat(), lng: currMarker.position.lng() };
+                    nodes.push(mark2);
+                    addPath(mark1, mark2);
+                    addEdge(prevMarker, currMarker);
+                }
             }
 
         }
