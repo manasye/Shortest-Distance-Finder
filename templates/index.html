@@ -81,7 +81,7 @@
                 <textarea name="input-end" id="input-end" cols="7" rows="1"></textarea>
             </div>
             <!-- Button for submitting -->
-            <a href="javascript:sendInput();" id="btn">Submit</a>
+            <a href="#" id="btn">Submit</a>
         </div>
     </div>
 
@@ -90,7 +90,7 @@
         var prevMarker = null, currMarker = null;
         var markers = [], nodes = [], edges = [];
         var adjMatrix = [];
-        
+
         // Initialize map
         function initMap() {
             // set first place to be seen in map
@@ -114,7 +114,7 @@
                 nodes.splice(-1, 1);
                 nodes.splice(-1, 1);
                 edges.splice(-1, 1);
-                
+
                 // Still unable to implement save file here
 
                 console.log(nodes);
@@ -138,7 +138,7 @@
                     text : (markers.length + 1).toString(),
                     color : 'white'
                 }
-            }); 
+            });
 
             marker.addListener('click', function(){
                 isAlreadyExist = true;
@@ -148,8 +148,8 @@
                 addEdge(currMarker, this);
                 nodes.push(mark2);
                 prevMarker = currMarker;
-                currMarker = this; 
-            });     
+                currMarker = this;
+            });
 
             if(!isAlreadyExist) {
                 // Keep the previous and current marker
@@ -192,27 +192,45 @@
         }
 
         // Function that do A* algorithm
-        function findMinPath(){
-            var startingNodes = document.getElementById('input-start').value;
-            var endNodes = document.getElementById('input-end').value;
+        function findMinPath() {
+            startingNode = document.getElementById('input-start').value;
+            endNode = document.getElementById('input-end').value;
+            // Formatting input
+            var inputData = {}
+            inputData.node_list = nodes;
+            inputData.matrix = adjMatrix;
+            inputData.start = startingNode;
+            inputData.end = endNode;
+            inputData = JSON.stringify(inputData)
+            // Send input to server for processing
+            $.ajax({
+              method : "POST",
+              url : "./ProcInput",
+              data : {input : inputData}
+            }).done(function(path) {
+              result = JSON.parse(path)
+              if (result["status"] == -999) {
+                alert("Server missing some sent data...")
+              }
+              else {
+                // Process path here
 
-            // Result for Algorithm for A* will be here
+                // Make a new result heading html content
+                var heading = document.createElement('h3');
+                var node = document.createTextNode('Result');
+                heading.appendChild(node);
 
+                // Make a new answers html content
+                var path = document.createElement('p');
+                var node = document.createTextNode(startingNode + " to " + endNode);
+                path.appendChild(node);
 
-            // Make a new result heading html content
-            var heading = document.createElement('h3');
-            var node = document.createTextNode('Result');
-            heading.appendChild(node);
-
-            // Make a new answers html content
-            var path = document.createElement('p');
-            var node = document.createTextNode(startingNodes + " to " + endNodes);
-            path.appendChild(node);
-
-            // Append to navigation placeholder
-            var element = document.getElementById('nav');
-            element.appendChild(heading);
-            element.appendChild(path);
+                // Append to navigation placeholder
+                var element = document.getElementById('nav');
+                element.appendChild(heading);
+                element.appendChild(path);
+              }
+            });
         }
 
         // Function that add path to two markers
@@ -262,7 +280,7 @@
                 }
             }
             return checked;
-        }  
+        }
 
         // Function that seek distance from certain node
         function calcDistance(i, j) {
@@ -271,7 +289,7 @@
                     return edges[k].dist;
                 }
             }
-        }    
+        }
 
         // Function that create adjacency matrix from edges and nodes
         function createAdjMatrix(edges, nodes) {
@@ -281,7 +299,7 @@
                     // Same node, add dummy element
                     if (i === j) {
                         temp.push(-1);
-                    } 
+                    }
                     // Check whether it exist in edge list
                     else if (isExist(i, j)) {
                         temp.push(calcDistance(i, j));
@@ -298,18 +316,6 @@
                 adjMatrix.push(temp);
             }
         }
-
-        // Function to send input to browser (ONLY FOR TESTING)
-        function sendInput() {
-          $.ajax({
-            method : "POST",
-            url : "./ProcInput"
-            //data : {test : "YA TEST AJA"}
-          }).done(function(msg) {
-            $("#input-column").append(msg);
-          });
-        }
-        
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCg6xj5SA1PGTsVbxm7fFF6-7Q2CZlbGgY&callback=initMap">
