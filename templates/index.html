@@ -180,6 +180,10 @@
                 var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat);
                 placeMarker(coordinate, map);
             }
+            lines[i] = lines[i].split(',');
+            linObj = ({ num: i + 1, absis: lines[0][0], ordinat: lines[0][1] });
+            var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat);
+            placeMarker(coordinate, map);
 
         }
 
