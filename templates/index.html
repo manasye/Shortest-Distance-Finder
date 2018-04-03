@@ -85,7 +85,7 @@
     </div>
 
     <script>
-        var map;
+        var map, path = [];
         var prevMarker = null, currMarker = null;
         var markers = [], nodes = [], edges = [];
         var adjMatrix = [], nodesEff = [];
@@ -115,6 +115,8 @@
                 edges.splice(-1, 1);
 
                 cleanDuplicate();
+                removeLine();
+                console.log(nodesEff);
                 createAdjMatrix();
                 findMinPath();
             });
@@ -180,11 +182,6 @@
                 var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat);
                 placeMarker(coordinate, map);
             }
-            lines[i] = lines[i].split(',');
-            linObj = ({ num: i + 1, absis: lines[0][0], ordinat: lines[0][1] });
-            var coordinate = new google.maps.LatLng(linObj.absis, linObj.ordinat);
-            placeMarker(coordinate, map);
-
         }
 
         // Function that do A* algorithm
@@ -288,6 +285,7 @@
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
+            path.push(flightPath);
             // Set path on the map
             flightPath.setMap(map);
         }
@@ -373,6 +371,13 @@
                     nodesEff.push(nodes[i]);
                 }
             }
+        }
+
+        // Function that remove path line in map
+        function removeLine() {
+            for(var i = 0; i < path.length ; i++) {
+                path[i].setMap(null);
+            } 
         }
 
     </script>
