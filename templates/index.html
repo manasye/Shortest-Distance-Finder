@@ -133,7 +133,7 @@
                     color : 'white'
                 }
             });
-            
+
             marker.addListener('click', function(){
                 isAlreadyExist = true;
                 mark1 = { lat: this.position.lat(), lng: this.position.lng() };
@@ -208,18 +208,19 @@
               if (result["status"] == -999) {
                 alert("Server missing some sent data...");
               }
-              else if (result[status] == 1) {
+              else if (result["status"] == 1) {
                 alert("Start or finishing index cannot be empty!");
               }
-              else if ((result[status] == 2) || (result[status] == 3)) {
+              else if ((result["status"] == 2) || (result["status"] == 3)) {
                 alert("Start or finishing index is out of bounds!");
               }
               else {
                 // Stores the path from start to end
-                var path = result["path"][0];
+                // For now, this will only show the first found path
+                var path = result["path"][0][0];
                 // Distance of this path
-                var path_distance = result["path"][1];
-                
+                var path_distance = result["path"][0][1];
+
                 // Add path result in map
                 addPathResult(path);
 
@@ -227,7 +228,7 @@
                 var heading = document.createElement('h3');
                 var node = document.createTextNode('Result : ');
                 heading.appendChild(node);
-                
+
                 // Convert array of path to string
                 pathString = pathToString(path);
                 // Make a new answers html content
